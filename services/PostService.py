@@ -41,7 +41,7 @@ class PostService:
         """
 
         prompt = f"""
-        The following is a series of articles {post.topic}. Please summarize
+        The following is a series of articles about {post.topic}. Please summarize
         the articles and write a compelling blog post highlighting the key points about each article.
 
         The post should be short and concise and should not be more than 500 words. 
