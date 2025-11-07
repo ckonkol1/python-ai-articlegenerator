@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-light">
+    
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header -->
+                <div class="text-center mb-5">
+                    <h1 class="display-4 text-primary mb-3">{{ heading }}</h1>
+                    <p class="lead text-muted">{{ message }}</p>
+                </div>
+
+                <!-- Alert Messages -->
+                {% if generated_content %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <strong>Success!</strong> Document generated successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+                
+                {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+
+                <!-- Main Card -->
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>Generate Your Article
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="generatorForm">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="topic" class="form-label">
+                                            <i class="bi bi-lightbulb me-1"></i>Topic
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               id="topic" 
+                                               name="topic" 
+                                               placeholder="Enter an interesting topic to explore..." 
+                                               value="{{ topic or '' }}" 
+                                               required>
+                                        <div class="form-text">What would you like to write about today?</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="llm" class="form-label">
+                                            <i class="bi bi-cpu me-1"></i>AI Model
+                                        </label>
+                                        {% if available_models %}
+                                        <select class="form-select form-select-lg" id="llm" name="llm" required>
+                                            <option value="">Choose AI Model</option>
+                                            {% for model in available_models %}
+                                            <option value="{{ model.value }}" 
+                                                    {% if selected_model == model.value %}selected{% endif %}>
+                                                {{ model.label }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                        {% else %}
+                                        <select class="form-select form-select-lg" id="llm" name="llm" disabled>
+                                            <option value="">No models configured</option>
+                                        </select>
+                                        <div class="form-text text-danger">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>
+                                            Please configure your .env file with API keys to enable AI models.
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center mb-4">
+                                <button type="button" 
+                                        id="generateBtn" 
+                                        class="btn btn-primary btn-lg px-5" 
+                                        onclick="generateDocument()" 
+                                        disabled>
+                                    <i class="bi bi-magic me-2"></i>
+                                    <span id="btnText">Generate {{ 'Another ' if generated_content else '' }}Document</span>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Output Section -->
+                        <div class="mb-3">
+                            <label for="output" class="form-label">
+                                <i class="bi bi-file-text me-1"></i>Generated Document
+                            </label>
+                            <div class="position-relative">
+                                <div class="form-control" 
+                                     id="output" 
+                                     style="height: 300px; overflow-y: auto; background: #fff; white-space: pre-wrap;">{{ generated_content or '' }}</div>
+                                <button type="button" 
+                                        class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" 
+                                        id="copyBtn" 
+                                        onclick="copyToClipboard()" 
+                                        style="display: none;">
+                                    <i class="bi bi-clipboard"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="bi bi-robot me-2"></i>
+                Powered by AI Article Generator &copy; 2025
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        const topicInput = document.getElementById('topic');
+        const generateBtn = document.getElementById('generateBtn');
+        const llmSelect = document.getElementById('llm');
+        const copyBtn = document.getElementById('copyBtn');
+        const btnText = document.getElementById('btnText');
+        
+        function updateButtonState() {
+            const isValid = topicInput.value.trim() && llmSelect.value;
+            generateBtn.disabled = !isValid;
+            
+            if (isValid) {
+                generateBtn.classList.remove('btn-secondary');
+                generateBtn.classList.add('btn-primary');
+            } else {
+                generateBtn.classList.remove('btn-primary');
+                generateBtn.classList.add('btn-secondary');
+            }
+        }
+        
+        function showCopyButton() {
+            const output = document.getElementById('output');
+            if (output.innerText.trim() && output.innerText !== 'Generated content will appear here...') {
+                copyBtn.style.display = 'block';
+            }
+        }
+        
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            const text = output.innerText;
+            navigator.clipboard.writeText(text);
+            
+            // Show success feedback
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="bi bi-check"></i> Copied!';
+            copyBtn.classList.remove('btn-outline-secondary');
+            copyBtn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+                copyBtn.classList.remove('btn-success');
+                copyBtn.classList.add('btn-outline-secondary');
+            }, 2000);
+        }
+        
+        llmSelect.addEventListener('change', updateButtonState);
+        topicInput.addEventListener('input', updateButtonState);
+        
+        // Initial state check
+        updateButtonState();
+        showCopyButton();
+        
+        function generateDocument() {
+            const topic = document.getElementById('topic').value;
+            const llm = document.getElementById('llm').value;
+            const output = document.getElementById('output');
+            
+            // Show loading state
+            generateBtn.disabled = true;
+            generateBtn.classList.remove('btn-primary');
+            generateBtn.classList.add('btn-warning');
+            btnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+            
+            output.innerHTML = 'Please wait...';
+            copyBtn.style.display = 'none';
+        
+            fetch('/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({model: llm, topic: topic})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Use marked to parse markdown to HTML
+                    output.innerHTML = marked.parse(data.post.response);
+                    showCopyButton();
+                } else {
+                    output.innerHTML = 'Error: ' + (data.error || 'Unknown error occurred');
+                }
+            })
+            .catch(error => {
+                output.innerHTML = 'Error: ' + error.message;
+            })
+            .finally(() => {
+                // Reset button state
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('btn-warning');
+                generateBtn.classList.add('btn-primary');
+                btnText.innerHTML = '<i class="bi bi-magic me-2"></i>Generate Another Document';
+                updateButtonState();
+            });
+        }
+    </script>
+</body>
+</html>
