@@ -35,7 +35,7 @@ class PostService:
                 
         
         system_message = """
-        You are a helpful assistant who's job is to accurately summarize long series of 
+        You are a helpful assistant whose job is to accurately summarize long series of 
         articles provided to you by the user and write up a compelling and easy to 
         digest social media post.
         """
