@@ -5,7 +5,7 @@ An intelligent article generation application powered by OpenAI's GPT models. Ge
 ## Features
 
 - **AI-Powered Content Generation** - Uses OpenAI GPT models to create high-quality articles
-- **Multiple AI Models** - Support for GPT-4, GPT-3.5, Claude, and Gemini
+- **Multiple AI Models** - Support for GPT-5, GPT-3.5, Claude, and Gemini
 - **Professional UI** - Modern Bootstrap-based interface with responsive design
 - **Real-time Generation** - Live article creation with loading indicators
 - **Copy to Clipboard** - Easy content sharing and export
@@ -56,7 +56,7 @@ An intelligent article generation application powered by OpenAI's GPT models. Ge
    
    # Available AI Models Configuration (optional)
    # Configure which models appear in the dropdown
-   AVAILABLE_MODELS=[{"value": "gpt4", "label": "GPT-4"}, {"value": "gpt35", "label": "GPT-3.5"}, {"value": "claude", "label": "Claude"}, {"value": "gemini", "label": "Gemini"}]
+   AVAILABLE_MODELS=[{"value": "gpt5", "label": "GPT-5"}, {"value": "gpt35", "label": "GPT-3.5"}, {"value": "claude", "label": "Claude"}, {"value": "gemini", "label": "Gemini"}]
    ```
    
    **Alternative: Set environment variables directly**
@@ -98,7 +98,7 @@ An intelligent article generation application powered by OpenAI's GPT models. Ge
 ## How to Use
 
 1. **Enter a Topic** - Type any subject you want to write about
-2. **Select AI Model** - Choose from available AI models (GPT-4, GPT-3.5, etc.)
+2. **Select AI Model** - Choose from available AI models (GPT-5, GPT-3.5, etc.)
 3. **Generate Article** - Click the generate button and wait for AI processing
 4. **Review & Copy** - Review the generated content and copy to clipboard if needed
 
@@ -164,7 +164,7 @@ python-ai-articlepilot/
 
 ### Available AI Models
 
-- `gpt4` - GPT-4 (Recommended for best quality)
+- `gpt5` - GPT-5 (Recommended for best quality)
 - `gpt35` - GPT-3.5 (Faster, cost-effective)
 - `claude` - Claude (Alternative AI model)
 - `gemini` - Google Gemini (Alternative AI model)
