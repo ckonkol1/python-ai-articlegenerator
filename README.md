@@ -113,7 +113,7 @@ fetch('/create', {
         'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-        model: 'gpt4',
+        model: 'gpt5',
         topic: 'Artificial Intelligence in Healthcare'
     })
 })
@@ -125,7 +125,7 @@ fetch('/create', {
     "status": "success",
     "message": "Post created successfully",
     "post": {
-        "model": "gpt4",
+        "model": "gpt5",
         "topic": "Artificial Intelligence in Healthcare",
         "response": "Generated article content..."
     }
