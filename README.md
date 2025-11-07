@@ -2,6 +2,8 @@
 
 An intelligent article generation application powered by OpenAI's GPT models. Generate compelling, well-researched articles on any topic using advanced AI technology.
 
+![AI Article Generator](/static/img/ai_generator.png)
+
 ## Features
 
 - **AI-Powered Content Generation** - Uses OpenAI GPT models to create high-quality articles
