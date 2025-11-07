@@ -1,6 +1,8 @@
-# AI Article Pilot
+# AI Article Generator
 
 An intelligent article generation application powered by OpenAI's GPT models. Generate compelling, well-researched articles on any topic using advanced AI technology.
+
+![AI Article Generator](/static/img/ai_generator.png)
 
 ## Features
 
